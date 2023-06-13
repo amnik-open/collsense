@@ -19,3 +19,6 @@ class CollsenseConfig:
 
     def get_url_database_config(self):
         return self.config["URL Database"]
+
+    def get_scraper_config(self):
+        return self.config["Collector Scraper"]
