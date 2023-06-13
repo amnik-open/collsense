@@ -22,3 +22,6 @@ class CollsenseConfig:
 
     def get_scraper_config(self):
         return self.config["Collector Scraper"]
+
+    def get_discovery_config(self):
+        return self.config["Discovery"]

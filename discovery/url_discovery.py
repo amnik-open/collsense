@@ -1,6 +1,9 @@
 import time
 import threading
 from db.rdb_interface import PostgresInterface
+from config.config import CollsenseConfig
+
+Conf = CollsenseConfig()
 
 
 class UrlDiscovery:
@@ -27,7 +30,8 @@ class UrlDiscovery:
             for i, v in new_addresses.items():
                 self.pipeline.publish_create_message(i, v)
                 self.sensor_url[i] = v
-            time.sleep(10)
+            interval = int(Conf.get_discovery_config()["discovery_interval"])
+            time.sleep(interval)
 
     def start(self):
         discover = threading.Thread(target=self._discover)
