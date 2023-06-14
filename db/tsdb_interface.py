@@ -1,6 +1,7 @@
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 from config import config
+from datetime import datetime
 import os
 
 Conf = config.CollsenseConfig()
@@ -44,3 +45,21 @@ class InfluxdbInterface:
         self._add_tags(p, tags)
         write_api.write(bucket=self.db_connection_config["bucket"],
                         org=self.db_connection_config["org"], record=p)
+
+    def create_bucket(self, bucket_name, org):
+        bucket_api = self.client.buckets_api()
+        bucket_api.create_bucket(bucket_name=bucket_name, org=org)
+
+    def create_periodic_mean_task(self, period, measurement,
+                                  bucket_src, bucket_dst, org,
+                                  task_name):
+        org_api = self.client.organizations_api()
+        orgs = org_api.find_organizations(org=org)
+        current_time = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+        flux = f'from(bucket: "{bucket_src}") |> range(start:' \
+               f' {current_time}) |> filter(fn: (r) => ' \
+               f'r._measurement == "{measurement}") |> aggregateWindow(' \
+               f'every: {period}, fn: mean)|> to(bucket: "{bucket_dst}")'
+        task_api = self.client.tasks_api()
+        task_api.create_task_every(name=task_name, flux=flux, every=period,
+                                   organization=orgs[0])
