@@ -10,6 +10,7 @@ class SensorServer:
 
     def __init__(self, sensor_plugin):
         self.sensor = sensor_plugin.Sensor()
+        self.port = Conf.get_server_config()['port']
 
     def _app(self, environ, start_response):
         if environ['PATH_INFO'] == '/sensor':
@@ -22,8 +23,8 @@ class SensorServer:
             return [bytes('', 'utf-8')]
 
     def serve(self):
-        httpd = make_server('', 8080, self._app)
-        print('Serving on port 8080...')
+        httpd = make_server('', int(self.port), self._app)
+        print(f'Serving on port {self.port}...')
         httpd.serve_forever()
 
 

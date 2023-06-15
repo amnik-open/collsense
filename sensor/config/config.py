@@ -1,4 +1,5 @@
 import configparser
+import sys
 
 
 class SensorConfig:
@@ -18,6 +19,9 @@ class SensorConfig:
         return self.config['Database']
 
     def get_server_config(self):
+        if len(sys.argv) > 1:
+            self.config['Server']['host'] = sys.argv[1]
+            self.config['Server']['port'] = sys.argv[2]
         return self.config['Server']
 
 
