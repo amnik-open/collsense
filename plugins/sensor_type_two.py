@@ -14,8 +14,6 @@ class SensorParser(SensorParserInterface):
 
     @classmethod
     def parse(cls, json_data):
-        output = {"type": cls.type, 'temperature': json_data['temperature'],
-                  'humidity': json_data['humidity']}
+        output = {'temperature': json_data['temperature'], 'humidity':
+            json_data['humidity']}
         return output
-
-
