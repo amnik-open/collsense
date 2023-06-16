@@ -12,8 +12,8 @@ class SensorRecognition:
         sensor_parsers.append(sensor_parser.SensorParser)
 
     @classmethod
-    def get_sensor_parser(cls, json_data):
+    def get_sensor(cls, json_data):
         for sp in cls.sensor_parsers:
             if sp.can_parse(json_data):
-                return sp.parse
-        return None
+                return sp
+        raise ValueError
