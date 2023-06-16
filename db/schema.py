@@ -16,12 +16,13 @@ class SensorSchema:
 
     def _validate_fields(self):
         for v in self.fields.keys():
-            if str(v) not in self.valid_fields:
+            if str(v) not in self.valid_fields and str(v) != "NULL":
                 return False
         return True
 
     def _validate_measurement(self):
-        return self.measurement in self.valid_measurement
+        return self.measurement in self.valid_measurement or \
+            self.measurement == "undefined_sensor"
 
     def save(self):
         if self._validate_measurement() and self._validate_fields():
