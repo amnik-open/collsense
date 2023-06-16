@@ -58,8 +58,9 @@ class InfluxdbInterface:
         current_time = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
         flux = f'from(bucket: "{bucket_src}") |> range(start:' \
                f' {current_time}) |> filter(fn: (r) => ' \
-               f'r._measurement == "{measurement}") |> aggregateWindow(' \
-               f'every: {period}, fn: mean)|> to(bucket: "{bucket_dst}")'
+               f'r._measurement == "{measurement}" and r._field != "NULL" ) ' \
+               f'|> aggregateWindow(every: {period}, fn: mean) |> to (' \
+               f'bucket: "{bucket_dst}")'
         task_api = self.client.tasks_api()
         task_api.create_task_every(name=task_name, flux=flux, every=period,
                                    organization=orgs[0])
