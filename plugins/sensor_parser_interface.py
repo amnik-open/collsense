@@ -21,9 +21,8 @@ class SensorParserInterface:
     @classmethod
     def parse(cls, json_data):
         ''' Parse json_data input according to sensor_output_json_schema,
-        keys of output dict must only include sensor_measurement_parameters
-        config plus type key '''
-        output = {"type": cls.type}
-        return output
+        and return dict with keys that must include in
+        sensor_measurement_parameters config '''
+        raise NotImplementedError
 
 
