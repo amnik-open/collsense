@@ -3,6 +3,11 @@ import configparser
 
 class CollsenseConfig:
 
+    def __new__(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(CollsenseConfig, cls).__new__(cls)
+        return cls.instance
+
     def __init__(self):
         self.config = self._parse()
 
