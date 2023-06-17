@@ -13,6 +13,7 @@ class SetupTasks:
         sensors = Conf.get_collector_config()["enabled_sensor"].split(",")
         tasks_period = Conf.get_collector_config()["tasks_mean_period"].split(",")
         for p in tasks_period:
+            p = p.strip()
             try:
                 self.db.create_bucket(bucket_name=f"{p}_mean", org=db_conf[
                     "org"])
