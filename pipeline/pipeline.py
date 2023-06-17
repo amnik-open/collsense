@@ -21,5 +21,9 @@ class SensorMessagePipeline(Queue):
         m = Message("delete", s_id, url)
         self.put(m)
 
+    def publish_stop_message(self):
+        m = Message("stop", None, None)
+        self.put(m)
+
     def consume(self):
         return self.get()
