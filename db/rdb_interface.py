@@ -27,7 +27,7 @@ class PostgresInterface:
                 retry -= 1
                 time.sleep(interval)
 
-    def get_sensor_cursor(self):
+    def get_sensor_address_cursor(self):
         cursor = self.db_con.cursor()
         addresses_query = "select * from ADDRESS"
         cursor.execute(addresses_query)
