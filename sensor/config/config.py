@@ -4,6 +4,11 @@ import sys
 
 class SensorConfig:
 
+    def __new__(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(SensorConfig, cls).__new__(cls)
+        return cls.instance
+
     def __init__(self):
         self.config = self._parse()
 
