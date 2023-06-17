@@ -64,3 +64,11 @@ class InfluxdbInterface:
         task_api = self.client.tasks_api()
         task_api.create_task_every(name=task_name, flux=flux, every=period,
                                    organization=orgs[0])
+
+    def query_bucket(self, bucket, range, columns, last):
+        query_api = self.client.query_api()
+        query = f'from(bucket: "{bucket}") |> range(start: {range})'
+        if last:
+            query += " |> last()"
+        tables = query_api.query(query)
+        return tables.to_values(columns=columns)
