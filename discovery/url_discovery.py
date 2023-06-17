@@ -15,22 +15,30 @@ class UrlDiscovery:
         self.sensor_url = {}
 
     def _discover(self):
+        page_size = int(Conf.get_url_database_config()['fetch_page_size'])
+        interval = int(Conf.get_discovery_config()["discovery_interval"])
         while not self.stop_event.is_set():
-            new_addresses = self.db.get_sensor_id_url()
-            for i, v in self.sensor_url.items():
-                if i in new_addresses:
-                    if v != new_addresses[i]:
-                        self.pipeline.publish_update_message(i,
-                                                             new_addresses[i])
-                        self.sensor_url[i] = new_addresses[i]
-                    del new_addresses[i]
-                else:
-                    self.pipeline.publish_delete_message(i, v)
-                    del self.sensor_url[i]
-            for i, v in new_addresses.items():
-                self.pipeline.publish_create_message(i, v)
-                self.sensor_url[i] = v
-            interval = int(Conf.get_discovery_config()["discovery_interval"])
+            new_addresses = {}
+            new_addresses_cursor = self.db.get_sensor_address_cursor()
+            while True:
+                addresses = new_addresses_cursor.fetchmany(page_size)
+                if not addresses:
+                    break
+                for address in addresses:
+                    new_addresses[str(address[0])] = address[1]
+                for i, v in self.sensor_url.items():
+                    if i in new_addresses:
+                        if v != new_addresses[i]:
+                            self.pipeline.publish_update_message(i,
+                                                                 new_addresses[i])
+                            self.sensor_url[i] = new_addresses[i]
+                        del new_addresses[i]
+                    else:
+                        self.pipeline.publish_delete_message(i, v)
+                        del self.sensor_url[i]
+                for i, v in new_addresses.items():
+                    self.pipeline.publish_create_message(i, v)
+                    self.sensor_url[i] = v
             time.sleep(interval)
 
     def start(self):
