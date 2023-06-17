@@ -11,6 +11,4 @@ class SensorInterface:
     def sense_world(self):
         """Create json output object from sensed_json_class_model with
         sensed data from world"""
-        pass
-
-
+        raise NotImplementedError
