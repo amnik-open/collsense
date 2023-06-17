@@ -1,4 +1,3 @@
-import json
 from config import config
 from web.view import CollsenseView
 from wsgiref.simple_server import make_server
@@ -18,11 +17,10 @@ class Web:
             return [bytes(report, 'utf-8')]
         else:
             start_response('404 Not Found', [('Content-Type',
-                                              'application/json')])
+                                            'application/json')])
             return [bytes('', 'utf-8')]
 
     def start(self):
         httpd = make_server('', 800, self._app)
         print('Web on port 800...')
         httpd.serve_forever()
-
