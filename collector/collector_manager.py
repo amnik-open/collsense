@@ -22,6 +22,10 @@ class CollectorManager:
         self.id_sensor[s_id].stop()
         del self.id_sensor[s_id]
 
+    def _stop_scrapers(self):
+        for scraper in self.id_sensor.values():
+            scraper.stop()
+
     def _consume_discovery_message(self):
         while not self.stop_event.is_set() or not self.pipeline.empty():
             message = self.pipeline.consume()
@@ -34,8 +38,8 @@ class CollectorManager:
             elif message.name == "delete":
                 self._delete_scraper(message.s_id)
             elif message.name == "stop":
-                for scraper in self.id_sensor.values():
-                    scraper.stop()
+                self._stop_scrapers()
+        self._stop_scrapers()
 
     def start(self):
         manage = threading.Thread(target=self._consume_discovery_message)
