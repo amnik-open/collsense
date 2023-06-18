@@ -35,9 +35,7 @@ class Scraper:
                 status = "DOWN"
             tags = {"url": self.target, "status": status}
             data = {"NULL": "No Data"}
-            if self.sensor == "undefined":
-                tags["sensor"] = "Undefined"
-            else:
+            if self.sensor != "undefined":
                 if status == "UP":
                     json_data = json.loads(response.text)
                     if self.sensor is None:
@@ -46,7 +44,6 @@ class Scraper:
                             data = self.sensor.parse(json_data)
                         except ValueError:
                             self.sensor = "undefined"
-                            tags["sensor"] = "Undefined"
                             print("Sensor is Undefined")
                     else:
                         data = self.sensor.parse(json_data)
