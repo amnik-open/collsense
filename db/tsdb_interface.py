@@ -65,9 +65,12 @@ class InfluxdbInterface:
         task_api.create_task_every(name=task_name, flux=flux, every=period,
                                    organization=orgs[0])
 
-    def query_bucket(self, bucket, range, columns, last):
+    def query_bucket(self, bucket, range, columns, last, measurement=None):
         query_api = self.client.query_api()
         query = f'from(bucket: "{bucket}") |> range(start: {range})'
+        if measurement:
+            query += f' |> filter(fn: (r) => r._measurement == "' \
+                     f'{measurement}")'
         if last:
             query += " |> last()"
         tables = query_api.query(query)
