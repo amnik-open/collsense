@@ -28,7 +28,7 @@ class CollsenseView:
         return report
 
     @staticmethod
-    def _create_html_section(head, table_head, rows):
+    def _create_html_section(head, table_head, rows, message="No data now"):
         if rows != "":
             output = f'''<h2>{head}</h2>
     
@@ -39,7 +39,7 @@ class CollsenseView:
                         '''
         else:
             output = f'''<h2>{head}</h2>
-                        <p>No data now</p>
+                        <p>{message}</p>
                       '''
         return output
 
@@ -96,7 +96,7 @@ class CollsenseView:
                                                   "Status")
         result += self._create_html_section(head=f"Undefined Sensors",
                                             table_head=table_head,
-                                            rows=rows)
+                                            rows=rows, message="No Sensor")
         return result
 
     def report(self):
