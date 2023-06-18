@@ -21,6 +21,7 @@ class Web:
             return [bytes('', 'utf-8')]
 
     def start(self):
-        httpd = make_server('', 800, self._app)
-        print('Web on port 800...')
+        port = int(Conf.get_web_config()["port"])
+        httpd = make_server('', port, self._app)
+        print(f'Web on port {port}...')
         httpd.serve_forever()
