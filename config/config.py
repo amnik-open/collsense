@@ -30,3 +30,6 @@ class CollsenseConfig:
 
     def get_discovery_config(self):
         return self.config["Discovery"]
+
+    def get_web_config(self):
+        return self.config["Web"]
