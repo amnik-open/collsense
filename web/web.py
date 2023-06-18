@@ -8,11 +8,11 @@ Conf = config.CollsenseConfig()
 class Web:
 
     def __init__(self):
-        self.app = CollsenseView()
+        self.view = CollsenseView()
 
     def _app(self, environ, start_response):
         if environ['PATH_INFO'] == '/report':
-            report = self.app.report_mean()
+            report = self.view.report()
             start_response('200 OK', [('Content-Type', 'text/html')])
             return [bytes(report, 'utf-8')]
         else:
