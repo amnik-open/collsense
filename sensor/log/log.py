@@ -10,9 +10,10 @@ class Logging:
     @classmethod
     def setup_log(cls):
         debug = Conf.get_log_config()["Debug"]
+        file_name = Conf.get_log_config()["log_file_name"]
         logger = logging.getLogger(cls.name)
         c_handler = logging.StreamHandler()
-        f_handler = logging.FileHandler('sensor.log')
+        f_handler = logging.FileHandler(file_name)
         if debug == "True":
             logger.setLevel(logging.DEBUG)
             c_handler.setLevel(logging.DEBUG)
