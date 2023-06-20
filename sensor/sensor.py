@@ -2,8 +2,10 @@ import json
 from config import config
 from db.setup import SensorDBSetup
 from wsgiref.simple_server import make_server
+from log.log import Logging
 
 Conf = config.SensorConfig()
+Log = Logging.get_logger("sensor")
 
 
 class SensorServer:
@@ -24,7 +26,7 @@ class SensorServer:
 
     def serve(self):
         httpd = make_server('', int(self.port), self._app)
-        print(f'Serving on port {self.port}...')
+        Log.info(f'Sensor serving on port {self.port}...')
         httpd.serve_forever()
 
 
