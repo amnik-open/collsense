@@ -1,8 +1,10 @@
 from config import config
 from web.view import CollsenseView
 from wsgiref.simple_server import make_server
+from log.log import Logging
 
 Conf = config.CollsenseConfig()
+Log = Logging.get_logger("web")
 
 
 class Web:
@@ -23,5 +25,5 @@ class Web:
     def start(self):
         port = int(Conf.get_web_config()["port"])
         httpd = make_server('', port, self._app)
-        print(f'Web on port {port}...')
+        Log.info(f'Web started on port {port}')
         httpd.serve_forever()
