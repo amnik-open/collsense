@@ -29,4 +29,5 @@ class SensorConfig:
             self.config['Server']['port'] = sys.argv[2]
         return self.config['Server']
 
-
+    def get_log_config(self):
+        return self.config["Log"]
