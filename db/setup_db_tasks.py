@@ -1,7 +1,9 @@
 from db.tsdb_interface import InfluxdbInterface
 from config.config import CollsenseConfig
+from log.log import Logging
 
 Conf = CollsenseConfig()
+Log = Logging.get_logger("db.tasks")
 
 
 class SetupTasks:
@@ -17,13 +19,14 @@ class SetupTasks:
             try:
                 self.db.create_bucket(bucket_name=f"{p}_mean", org=db_conf[
                     "org"])
+                Log.debug(f"Bucket {p}_mean is created")
             except:
-                print(f"{p}_mean created")
+                Log.debug(f"Bucket {p}_mean is exist")
             for sensor in sensors:
                 self.db.create_periodic_mean_task(period=f"{p}",
                                                   measurement=sensor.strip(),
                                                   bucket_src=db_conf["bucket"],
                                                   bucket_dst=f"{p}_mean",
                                                   org=db_conf["org"],
-                                                  task_name=f"{p}_mean_" +
-                                                            sensor.strip())
+                                                  task_name=f"{p}_mean_{sensor.strip()}")
+                Log.debug(f"Task {p}_mean_{sensor.strip()} is created")

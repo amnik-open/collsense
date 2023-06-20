@@ -1,3 +1,4 @@
+from log.log import Logging
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 from config import config
@@ -5,6 +6,7 @@ from datetime import datetime
 import os
 
 Conf = config.CollsenseConfig()
+Log = Logging.get_logger("db.tsdb")
 
 
 class InfluxdbInterface:
@@ -21,12 +23,16 @@ class InfluxdbInterface:
         return db_con_conf
 
     def _create_connection(self):
-        client = influxdb_client.InfluxDBClient(
-            url=self.db_connection_config["url"],
-            token=self.db_connection_config["token"],
-            org=self.db_connection_config['org']
-        )
-        return client
+        try:
+            client = influxdb_client.InfluxDBClient(
+                url=self.db_connection_config["url"],
+                token=self.db_connection_config["token"],
+                org=self.db_connection_config['org']
+            )
+            return client
+        except Exception as e:
+            Log.exception("Can not connect to influxdb")
+
 
     @staticmethod
     def _add_tags(p, tags):
@@ -39,39 +45,51 @@ class InfluxdbInterface:
             p.field(k, v)
 
     def write_measurement_to_db(self, measurement, tags, fields):
-        write_api = self.client.write_api(write_options=SYNCHRONOUS)
-        p = influxdb_client.Point(measurement)
-        self._add_fields(p, fields)
-        self._add_tags(p, tags)
-        write_api.write(bucket=self.db_connection_config["bucket"],
-                        org=self.db_connection_config["org"], record=p)
+        try:
+            write_api = self.client.write_api(write_options=SYNCHRONOUS)
+            p = influxdb_client.Point(measurement)
+            self._add_fields(p, fields)
+            self._add_tags(p, tags)
+            write_api.write(bucket=self.db_connection_config["bucket"],
+                            org=self.db_connection_config["org"], record=p)
+        except Exception as e:
+            Log.exception(f"Can not write {measurement} to db")
 
     def create_bucket(self, bucket_name, org):
-        bucket_api = self.client.buckets_api()
-        bucket_api.create_bucket(bucket_name=bucket_name, org=org)
+        try:
+            bucket_api = self.client.buckets_api()
+            bucket_api.create_bucket(bucket_name=bucket_name, org=org)
+        except Exception as e:
+            Log.exception(f"Can not create bucket {bucket_name}")
 
     def create_periodic_mean_task(self, period, measurement,
                                   bucket_src, bucket_dst, org,
                                   task_name):
-        org_api = self.client.organizations_api()
-        orgs = org_api.find_organizations(org=org)
-        current_time = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-        flux = f'from(bucket: "{bucket_src}") |> range(start:' \
-               f' {current_time}) |> filter(fn: (r) => ' \
-               f'r._measurement == "{measurement}" and r._field != "NULL" ) ' \
-               f'|> aggregateWindow(every: {period}, fn: mean) |> to (' \
-               f'bucket: "{bucket_dst}")'
-        task_api = self.client.tasks_api()
-        task_api.create_task_every(name=task_name, flux=flux, every=period,
-                                   organization=orgs[0])
+        try:
+            org_api = self.client.organizations_api()
+            orgs = org_api.find_organizations(org=org)
+            current_time = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+            flux = f'from(bucket: "{bucket_src}") |> range(start:' \
+                   f' {current_time}) |> filter(fn: (r) => ' \
+                   f'r._measurement == "{measurement}" and r._field != "NULL" ) ' \
+                   f'|> aggregateWindow(every: {period}, fn: mean) |> to (' \
+                   f'bucket: "{bucket_dst}")'
+            task_api = self.client.tasks_api()
+            task_api.create_task_every(name=task_name, flux=flux, every=period,
+                                       organization=orgs[0])
+        except Exception as e:
+            Log.exception(f"Can not create task {task_name}")
 
     def query_bucket(self, bucket, range, columns, last, measurement=None):
-        query_api = self.client.query_api()
-        query = f'from(bucket: "{bucket}") |> range(start: {range})'
-        if measurement:
-            query += f' |> filter(fn: (r) => r._measurement == "' \
-                     f'{measurement}")'
-        if last:
-            query += " |> last()"
-        tables = query_api.query(query)
-        return tables.to_values(columns=columns)
+        try:
+            query_api = self.client.query_api()
+            query = f'from(bucket: "{bucket}") |> range(start: {range})'
+            if measurement:
+                query += f' |> filter(fn: (r) => r._measurement == "' \
+                         f'{measurement}")'
+            if last:
+                query += " |> last()"
+            tables = query_api.query(query)
+            return tables.to_values(columns=columns)
+        except Exception as e:
+            Log.exception(f"Can not query bucket {bucket}")
