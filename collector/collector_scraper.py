@@ -1,12 +1,14 @@
-import time
 from collector.sensor_recognition import SensorRecognition
 from config.config import CollsenseConfig
 from db.schema import SensorSchema
+from log.log import Logging
+import time
 import requests
 import json
 import threading
 
 Conf = CollsenseConfig()
+Log = Logging.get_logger("collector.scraper")
 
 
 class Scraper:
@@ -44,16 +46,18 @@ class Scraper:
                             data = self.sensor.parse(json_data)
                         except ValueError:
                             self.sensor = "undefined"
-                            print("Sensor is Undefined")
+                            Log.warning(f"Sensor with url {self.target} is "
+                                        f"undefined")
                     else:
                         data = self.sensor.parse(json_data)
-
             s = self._create_sensor_schema(data, tags)
             s.save()
+            Log.debug(f"{self.target} is scraped")
             time.sleep(self.interval)
 
     def stop(self):
         self.stop_event.set()
+        Log.debug(f"Scraper with url {self.target} is stopped")
 
     def start(self):
         scrape = threading.Thread(target=self._scrape)

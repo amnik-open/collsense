@@ -1,5 +1,8 @@
 from collector.collector_scraper import Scraper
+from log.log import Logging
 import threading
+
+Log = Logging.get_logger("collector.manager")
 
 
 class CollectorManager:
@@ -32,15 +35,25 @@ class CollectorManager:
             if message.name == "create":
                 c = self._create_scraper(message.s_id, message.url)
                 c.start()
+                Log.info(f"New scraper {message.s_id} with url "
+                          f"{message.url} is started")
             elif message.name == "update":
                 c = self._update_scraper(message.s_id, message.url)
                 c.start()
+                Log.info(f"Scraper {message.s_id} updated with "
+                          f"url {message.url}")
             elif message.name == "delete":
                 self._delete_scraper(message.s_id)
+                Log.info(f"Scraper {message.s_id} with url {message.url} "
+                          f"is deleted")
             elif message.name == "stop":
                 self._stop_scrapers()
+                Log.info("All scrapers are stopped")
         self._stop_scrapers()
+        Log.info("All scrapers are stopped")
+        Log.info("Collector manger is stopped")
 
     def start(self):
         manage = threading.Thread(target=self._consume_discovery_message)
         manage.start()
+        Log.info(f"Collector manger start in thread {manage.name}")
