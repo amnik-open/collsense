@@ -31,7 +31,7 @@ class CollectorManager:
 
     def _consume_discovery_message(self):
         while not self.stop_event.is_set() or not self.pipeline.empty():
-            message = self.pipeline.consume()
+            message = self.pipeline.consume_message()
             if message.name == "create":
                 c = self._create_scraper(message.s_id, message.url)
                 c.start()

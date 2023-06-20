@@ -21,4 +21,4 @@ if __name__ == "__main__":
         w.start()
     except KeyboardInterrupt:
         stop.set()
-        p.publish_stop_message()
+        p.produce_stop_message()

@@ -31,15 +31,15 @@ class UrlDiscovery:
                 for i, v in self.sensor_url.items():
                     if i in new_addresses:
                         if v != new_addresses[i]:
-                            self.pipeline.publish_update_message(i,
+                            self.pipeline.produce_update_message(i,
                                                                  new_addresses[i])
                             self.sensor_url[i] = new_addresses[i]
                         del new_addresses[i]
                     else:
-                        self.pipeline.publish_delete_message(i, v)
+                        self.pipeline.produce_delete_message(i, v)
                         del self.sensor_url[i]
                 for i, v in new_addresses.items():
-                    self.pipeline.publish_create_message(i, v)
+                    self.pipeline.produce_create_message(i, v)
                     self.sensor_url[i] = v
             Log.debug("URLs are discovered")
             time.sleep(interval)
