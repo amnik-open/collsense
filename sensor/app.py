@@ -1,12 +1,12 @@
+from log.log import Logging
 import sys
-
 from sensor import Sensor
 from config import config
 import importlib
 
 if __name__ == "__main__":
     Conf = config.SensorConfig()
-
+    Logging.setup_log()
     if len(sys.argv) > 1:
         enable_plugin = sys.argv[3]
     else:
