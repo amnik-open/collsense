@@ -32,13 +32,16 @@ class SensorDBSetup:
         Log.error("Sensor can not connect to database")
 
     def _register_sensor_url(self):
-        server_conf = Conf.get_server_config()
-        url = f"http://{server_conf['host']}:{server_conf['port']}/sensor"
-        insertion_url_query = f'''INSERT INTO ADDRESS(URL) VALUES ('{url}')'''
-        cursor = self.db_con.cursor()
-        cursor.execute(insertion_url_query)
-        self.db_con.commit()
-        Log.info(f"Sensor register {url} in database")
+        try:
+            server_conf = Conf.get_server_config()
+            url = f"http://{server_conf['host']}:{server_conf['port']}/sensor"
+            insertion_url_query = f'''INSERT INTO ADDRESS(URL) VALUES ('{url}')'''
+            cursor = self.db_con.cursor()
+            cursor.execute(insertion_url_query)
+            self.db_con.commit()
+            Log.info(f"Sensor register {url} in database")
+        except Exception as e:
+            Log.exception("Can not register url in database")
 
     def execute_tasks(self):
         self._register_sensor_url()
