@@ -3,9 +3,11 @@ from discovery.url_discovery import UrlDiscovery
 from pipeline.pipeline import SensorMessagePipeline
 from db.setup_db_tasks import SetupTasks
 from web.web import Web
+from log.log import Logging
 import threading
 
 if __name__ == "__main__":
+    Logging.setup_log()
     try:
         stop = threading.Event()
         p = SensorMessagePipeline()
