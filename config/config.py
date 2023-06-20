@@ -33,3 +33,6 @@ class CollsenseConfig:
 
     def get_web_config(self):
         return self.config["Web"]
+
+    def get_log_config(self):
+        return self.config["Log"]
