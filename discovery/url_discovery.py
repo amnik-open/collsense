@@ -2,8 +2,10 @@ import time
 import threading
 from db.rdb_interface import PostgresInterface
 from config.config import CollsenseConfig
+from log.log import Logging
 
 Conf = CollsenseConfig()
+Log = Logging.get_logger("discovery")
 
 
 class UrlDiscovery:
@@ -25,7 +27,7 @@ class UrlDiscovery:
                 if not addresses:
                     break
                 for address in addresses:
-                    new_addresses[str(address[0])] = address[1]
+                    new_addresses[str(address[0])] = address[1].strip()
                 for i, v in self.sensor_url.items():
                     if i in new_addresses:
                         if v != new_addresses[i]:
@@ -39,8 +41,10 @@ class UrlDiscovery:
                 for i, v in new_addresses.items():
                     self.pipeline.publish_create_message(i, v)
                     self.sensor_url[i] = v
+            Log.debug("URLs are discovered")
             time.sleep(interval)
 
     def start(self):
         discover = threading.Thread(target=self._discover)
         discover.start()
+        Log.info(f"URL Discovery is started in thread {discover.name}")
