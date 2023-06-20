@@ -2,8 +2,10 @@ import time
 import psycopg2
 import os
 from config import config
+from log.log import Logging
 
 Conf = config.SensorConfig()
+Log = Logging.get_logger("db")
 
 
 class SensorDBSetup:
@@ -22,10 +24,12 @@ class SensorDBSetup:
             try:
                 con = psycopg2.connect(**db_con_conf)
                 con.autocommit = True
+                Log.debug("Sensor connect to database successfully")
                 return con
             except:
                 retry -= 1
                 time.sleep(retry_interval)
+        Log.error("Sensor can not connect to database")
 
     def _register_sensor_url(self):
         server_conf = Conf.get_server_config()
@@ -34,6 +38,7 @@ class SensorDBSetup:
         cursor = self.db_con.cursor()
         cursor.execute(insertion_url_query)
         self.db_con.commit()
+        Log.info(f"Sensor register {url} in database")
 
     def execute_tasks(self):
         self._register_sensor_url()
