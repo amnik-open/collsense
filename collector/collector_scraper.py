@@ -38,7 +38,7 @@ class Scraper:
             tags = {"url": self.target, "status": status}
             data = {"NULL": "No Data"}
             if self.sensor != "undefined":
-                if status == "UP":
+                if status == "UP" and response.status_code == 200:
                     json_data = json.loads(response.text)
                     if self.sensor is None:
                         try:
