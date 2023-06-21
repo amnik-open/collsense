@@ -11,23 +11,13 @@ class SensorMessagePipeline(Queue):
     def __init__(self):
         super().__init__()
 
-    def produce_update_message(self, s_id, url):
-        m = Message("update", s_id, url)
+    def produce_available_message(self, s_id, url):
+        m = Message('available', s_id, url)
         self.put(m)
         Log.debug(f"{m} is produced")
 
-    def produce_create_message(self, s_id, url):
-        m = Message("create", s_id, url)
-        self.put(m)
-        Log.debug(f"{m} is produced")
-
-    def produce_delete_message(self, s_id, url):
-        m = Message("delete", s_id, url)
-        self.put(m)
-        Log.debug(f"{m} is produced")
-
-    def produce_stop_message(self):
-        m = Message("stop", None, None)
+    def produce_unavailable_message(self, s_id):
+        m = Message("unavailable", s_id, None)
         self.put(m)
         Log.debug(f"{m} is produced")
 
@@ -35,3 +25,8 @@ class SensorMessagePipeline(Queue):
         m = self.get()
         Log.debug(f"{m} is consumed")
         return m
+
+    def produce_stop_message(self):
+        m = Message("stop", None, None)
+        self.put(m)
+        Log.debug(f"{m} is produced")
