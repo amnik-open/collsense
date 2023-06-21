@@ -55,6 +55,9 @@ class Scraper:
             Log.debug(f"{self.target} is scraped")
             time.sleep(self.interval)
 
+    def get_target(self):
+        return self.target
+
     def stop(self):
         self.stop_event.set()
         Log.debug(f"Scraper with url {self.target} is stopped")
