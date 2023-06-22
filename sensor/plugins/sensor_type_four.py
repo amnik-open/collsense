@@ -12,6 +12,7 @@ class Sensor(SensorInterface):
                     'temperature': {'type': 'number'},
                     'pressure': {'type': 'number'},
                 },
+                'additionalProperties': False,
             }
         },
         'additionalProperties': False,

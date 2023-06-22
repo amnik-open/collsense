@@ -12,6 +12,7 @@ class Sensor(SensorInterface):
                     'temp': {"type": "number"},
                     'hum': {"type": "number"},
                 },
+                'additionalProperties': False,
             }
         },
         'additionalProperties': False,
