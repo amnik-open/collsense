@@ -12,6 +12,7 @@ class SensorParser(SensorParserInterface):
                     'temp': {"type": "number"},
                     'hum': {"type": "number"},
                 },
+                'additionalProperties': False,
             }
         },
         'additionalProperties': False,
