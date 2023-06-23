@@ -1,4 +1,5 @@
 import configparser
+import os
 
 
 class CollsenseConfig:
@@ -20,9 +21,11 @@ class CollsenseConfig:
        return self.config["Collector"]
 
     def get_database_config(self):
+        self.config["Database"]["token"] = os.getenv("INFLUXDB_TOKEN")
         return self.config["Database"]
 
     def get_url_database_config(self):
+        self.config["URL Database"]["password"] = os.getenv("DB_PASSWORD")
         return self.config["URL Database"]
 
     def get_scraper_config(self):
