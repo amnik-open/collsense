@@ -25,8 +25,11 @@ class SensorSchema:
             self.measurement == "undefined_sensor"
 
     def save(self):
+        bucket = Conf.get_database_config()["bucket"]
+        org = Conf.get_database_config()["org"]
         if self._validate_measurement() and self._validate_fields():
-            self.db.write_measurement_to_db(measurement=self.measurement,
-                                            tags=self.tags, fields=self.fields)
+            self.db.write_measurement_to_bucket(measurement=self.measurement,
+                                            tags=self.tags, fields=self.fields,
+                                            bucket=bucket, org=org)
         else:
             raise ValueError
