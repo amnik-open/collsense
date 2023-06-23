@@ -1,7 +1,6 @@
 from config.config import CollsenseConfig
 from log.log import Logging
 import psycopg2
-import os
 import time
 
 Conf = CollsenseConfig()
@@ -15,7 +14,7 @@ class PostgresInterface:
 
     def _create_db_connection(self):
         db_conf = Conf.get_url_database_config()
-        db_con_conf = {'password': os.getenv('DB_PASSWORD'), 'user': db_conf[
+        db_con_conf = {'password': db_conf["password"], 'user': db_conf[
             'user'], 'host': db_conf['host'], 'database': db_conf['database'],
                        'port': db_conf['port']}
         retry = int(db_conf["connection_retry"])
