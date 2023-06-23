@@ -3,7 +3,6 @@ import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 from config import config
 from datetime import datetime
-import os
 
 Conf = config.CollsenseConfig()
 Log = Logging.get_logger("db.tsdb")
@@ -17,9 +16,8 @@ class InfluxdbInterface:
 
     def _get_db_connection_config(self):
         db_conf = Conf.get_database_config()
-        db_con_conf = {"url": db_conf["url"], "token": os.getenv(
-            "INFLUXDB_TOKEN"), "org": db_conf["org"], "bucket": db_conf[
-            "bucket"]}
+        db_con_conf = {"url": db_conf["url"], "token": db_conf["token"],
+                       "org": db_conf["org"], "bucket": db_conf["bucket"]}
         return db_con_conf
 
     def _create_connection(self):
@@ -44,14 +42,15 @@ class InfluxdbInterface:
         for k, v in fields.items():
             p.field(k, v)
 
-    def write_measurement_to_db(self, measurement, tags, fields):
+    def write_measurement_to_bucket(self, measurement, tags, fields, bucket,
+                                    org):
         try:
             write_api = self.client.write_api(write_options=SYNCHRONOUS)
             p = influxdb_client.Point(measurement)
             self._add_fields(p, fields)
             self._add_tags(p, tags)
-            write_api.write(bucket=self.db_connection_config["bucket"],
-                            org=self.db_connection_config["org"], record=p)
+            write_api.write(bucket=bucket,
+                            org=org, record=p)
         except Exception as e:
             Log.exception(f"Can not write {measurement} to db")
 
