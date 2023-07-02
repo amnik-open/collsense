@@ -50,6 +50,28 @@ services:
     depends_on:
       - sensor_addresses_db
 
+  sensor4:
+    image: sensor
+    container_name: sensor4
+    ports:
+      - "8083:8083"
+    command: python app.py sensor4 8083 sensor_type_four
+    environment:
+      - DB_PASSWORD=postgres
+    depends_on:
+      - sensor_addresses_db
+
+  sensor5:
+    image: sensor
+    container_name: sensor5
+    ports:
+      - "8084:8084"
+    command: python app.py sensor5 8084 sensor_type_five
+    environment:
+      - DB_PASSWORD=postgres
+    depends_on:
+      - sensor_addresses_db
+
   influxdb:
     image: influxdb:latest
     container_name: influxdb
@@ -82,4 +104,6 @@ services:
       - sensor
       - sensor2
       - sensor3
+      - sensor4
+      - sensor5
       - sensor_addresses_db
