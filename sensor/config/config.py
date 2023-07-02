@@ -18,6 +18,8 @@ class SensorConfig:
         return config
 
     def get_sensor_plugin(self):
+        if len(sys.argv) > 3:
+            self.config['Plugin']['enable_plugin'] = sys.argv[3]
         return self.config['Plugin']
 
     def get_db_config(self):
